@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thống Kê Tiêu Thụ Điện</title>
+    <link rel="stylesheet" href="{% static 'css/thongke.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+</head>
+<body>
+    <div id="sidebar">
+        <h2><a href="{% url 'home' %}">Menu</a></h2>
+        <a href="{% url 'search' %}">Tìm kiếm</a>
+        <a href="{% url 'thongke' %}">Thống kê</a>
+        <a href="{% url 'predict' %}">Dự Đoán</a>
+        <a href="{% url 'account' %}">Tài khoản</a>
+        <a class="logout-btn" href="{% url 'login' %}">Đăng xuất</a>
+    </div>
+    <div class="content">
+        <h1>Thống Kê Tiêu Thụ Điện</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Xem Thống Kê</button>
+        </form>
+
+        {% if chart_data %}
+            <div class="chart-section">
+                <h2>Biểu Đồ Tiêu Thụ</h2>
+                <canvas id="barChart" width="800" height="400"></canvas>
+            </div>
+            <div class="comparison-section">
+                <h2>So Sánh Chi Tiêu</h2>
+                <p>Chi tiêu kỳ này: {{ comparison_info.current_spent }} đồng</p>
+                <p>Chi tiêu kỳ trước: {{ comparison_info.previous_spent }} đồng</p>
+                <p>Chênh lệch: {{ comparison_info.difference }} đồng</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        var ctx = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for label in chart_data.labels %}"{{ label }}",{% endfor %}],
+                datasets: [{
+                    label: 'Tổng tiền',
+                    data: [{% for value in chart_data.values %}{{ value }},{% endfor %}],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm Kiếm Hóa Đơn Tiền Điện</title>
+    <link rel="stylesheet" href="{% static 'CSS/search.css' %}">
+</head>
+<body>
+    <div id="sidebar">
+        <h2><a href="{% url 'home' %}">Menu</a></h2>
+        <a href="{% url 'search' %}">Tìm kiếm</a>
+        <a href="{% url 'thongke' %}">Thống kê</a>
+        <a href="{% url 'predict' %}">Dự Đoán</a>
+        <a href="{% url 'account' %}">Tài khoản</a>
+        <a class="logout-btn" href="{% url 'login' %}">Đăng xuất</a>
+    </div>
+    <div class="content">
+        <h1>Tìm Kiếm Hóa Đơn Tiền Điện</h1>
+        <form method="get">
+            {{ form.as_p }}
+            <button type="submit">Tìm kiếm</button>
+        </form>
+        <button onclick="window.location.href='{% url 'add_bill' %}'">Thêm Hóa Đơn</button>
+        <ul>
+            {% for bill in bills %}
+            <li>
+                Mã hóa đơn: {{ bill.bill_name }}, Ngày thanh toán: {{ bill.payment_date }},
+                Số lượng tiêu thụ: {{ bill.consumption }} kWh, Số lượng tiêu thụ nước: {{ bill.water_consumption }} m³,Tổng tiền: {{ bill.total_amount }}
+            <br>
+            <button class="edit-btn" onclick="window.location.href='{% url 'edit_bill' bill.id %}'">Chỉnh sửa</button>
+            <button class="delete-btn" data-bill-id="{{ bill.id }}">Xóa</button>
+            <button class="export-btn" data-bill-id="{{ bill.id }}">Xuất</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var exportButtons = document.querySelectorAll('.export-btn');
+            exportButtons.forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    var billId = event.target.getAttribute('data-bill-id');
+                    window.location.href = '/export-bill/' + billId + '/';
+                });
+            });
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            var deleteButtons = document.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function(event) {
+                    var billId = event.target.getAttribute('data-bill-id');
+                    var confirmDelete = confirm("Bạn có chắc muốn xóa hóa đơn này không?");
+                    if (confirmDelete) {
+                        var csrftoken = getCookie('csrftoken'); // Lấy CSRF token từ cookie
+        
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/delete-bill/' + billId + '/', true);
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken); // Đặt CSRF token trong header của yêu cầu
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                alert("Hóa đơn đã được xóa thành công.");
+                                location.reload();
+                            } else {
+                                alert("Xóa hóa đơn không thành công. Vui lòng thử lại sau.");
+                            }
+                        };
+                        xhr.send();
+                    }
+                });
+            });
+        });
+        
+        // Hàm để lấy giá trị CSRF token từ cookie
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+    </script>
+    
+</body>
+</html>

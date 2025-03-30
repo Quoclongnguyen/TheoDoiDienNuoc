@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+        #sidebar {
+            width: 200px;
+            height: 100vh;
+            background-color: #333;
+            color: white;
+            padding: 20px;
+        }
+        #sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+        }
+        #sidebar a:hover {
+            background-color: #555;
+        }
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+            background: url('{% static "/IMG/thosuanuoc.png" %}') no-repeat center center fixed;
+            background-size: cover;
+            color: white; /* Adjust text color to suit the background image */
+
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h2><a href="{% url 'home' %}">Menu</a></h2>
+        <a href="{% url 'search' %}">Tìm kiếm</a>
+        <a href="{% url 'thongke' %}">Thống kê</a>
+        <a href="{% url 'predict' %}">Dự Đoán</a>
+        <a href="{% url 'account' %}">Tài khoản</a>
+        <a class="logout-btn" href="{% url 'login' %}">Đăng xuất</a>
+    </div>
+    <div id="content">
+    </div>
+</body>
+</html>

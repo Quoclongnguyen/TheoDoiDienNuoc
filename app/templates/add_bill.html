@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Hóa Đơn Mới</title>
+    <link rel="stylesheet" href="{% static 'CSS/add.css' %}">
+</head>
+<body>
+    <div id="sidebar">
+        <h2><a href="{% url 'home' %}">Menu</a></h2>
+        <a href="{% url 'search' %}">Tìm kiếm</a>
+        <a href="{% url 'thongke' %}">Thống kê</a>
+        <a href="{% url 'predict' %}">Dự Đoán</a>
+        <a href="{% url 'account' %}">Tài khoản</a>
+        <a class="logout-btn" href="{% url 'login' %}">Đăng xuất</a>
+    </div>
+    <div class="content">
+        <h1>Thêm Hóa Đơn Mới</h1>
+        {% if messages %}
+        {% for message in messages %}
+            <div class="{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Lưu Hóa Đơn</button>
+        </form>
+    </div>
+</body>
+</html>

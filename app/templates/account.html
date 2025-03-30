@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản</title>
+    <link rel="stylesheet" href="{% static 'CSS/account.css' %}">
+    <style>
+        .form-container {
+            background-color: #4CAF50; /* Màu xanh lá */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sidebar">
+        <h2><a href="{% url 'home' %}">Menu</a></h2>
+        <a href="{% url 'search' %}">Tìm kiếm</a>
+        <a href="{% url 'thongke' %}">Thống kê</a>
+        <a href="{% url 'predict' %}">Dự Đoán</a>
+        <a href="{% url 'account' %}">Tài khoản</a>
+        <a class="logout-btn" href="{% url 'login' %}">Đăng xuất</a>
+    </div>
+    <div class="form-container">
+        <h1>Tài khoản của bạn</h1>
+        <div class="profile-image">
+             <img src="{{ user.avatar.url }}" alt="Ảnh đại diện" style="height: 100px; width: 100px;">
+        </div>
+        <p>Username: {{ user.username }}</p>
+        <p>Full Name: {{ user.full_name }}</p>
+        <p>Email: {{ user.email }}</p>
+        <p>Phone Number: {{ user.phone_number }}</p>
+        <p>Address: {{ user.address }}</p>
+
+        {% for message in messages %}
+        <div class="{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+
+        <!-- Form thay đổi thông tin cá nhân -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group">
+                <br>
+                <label for="full_name" >Thay đổi họ tên:</label>
+                <input type="text" id="full_name" name="full_name" value="{{ user.full_name }}" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+            <div class="input-group">
+                <label for="phone_number">Số điện thoại:</label>
+                <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}" required>
+            </div>
+            <div class="input-group">
+                <label for="address">Địa chỉ:</label>
+                <input type="text" id="address" name="address" value="{{ user.address }}" required>
+            </div>
+            <input type="hidden" name="change_info" value="1">
+            <button type="submit">Cập nhật thông tin</button>
+        </form>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ avatar_form.as_p }}
+            <button type="submit" name="change_avatar">Cập nhật Ảnh Đại Diện</button>
+        </form>
+        <!-- Form thay đổi mật khẩu -->
+        <form method="post" action="{% url 'account' %}">
+            {% csrf_token %}
+            <div class="input-group">
+                <br>
+                <label for="old_password">Mật khẩu cũ:</label>
+                <input type="password" id="old_password" name="old_password" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Mật khẩu mới:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <input type="hidden" name="change_password" value="1">
+            <button type="submit">Đổi mật khẩu</button>
+        </form>
+
+    </div>
+</body>
+</html>
